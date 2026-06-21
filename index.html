@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Open Tasks App</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 40px 20px;
+            background-color: #f8fafc;
+            color: #111827;
+        }
+
+        .card {
+            max-width: 420px;
+            margin: 0 auto;
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        button {
+            width: 100%;
+            margin-top: 16px;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            background-color: #2563eb;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        p {
+            color: #4b5563;
+            line-height: 1.5;
+        }
+
+        .small {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Opening Tasks App...</h2>
+
+    <p>
+        If the app is installed, it will open automatically.
+        If not installed, you will be redirected to the fallback page.
+    </p>
+
+    <button onclick="openApp()">Open App</button>
+
+    <p class="small">
+        Demo smart link for Android and iOS.
+    </p>
+</div>
+
+<script>
+    const androidDeepLink = "tasks://open";
+    const iosDeepLink = "tasks://open";
+
+    const androidFallbackUrl = "./android-app-not-installed.html";
+    const iosFallbackUrl = "./ios-app-not-installed.html";
+
+    let fallbackTimer;
+
+    function isAndroidDevice() {
+        return /android/i.test(navigator.userAgent);
+    }
+
+    function isIOSDevice() {
+        return /iPad|iPhone|iPod/.test(navigator.userAgent)
+            || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    }
+
+    function clearFallbackTimer() {
+        if (fallbackTimer) {
+            clearTimeout(fallbackTimer);
+        }
+    }
+
+    document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+            clearFallbackTimer();
+        }
+    });
+
+    window.addEventListener("pagehide", function () {
+        clearFallbackTimer();
+    });
+
+    function openApp() {
+        if (isAndroidDevice()) {
+            window.location.href = androidDeepLink;
+
+            fallbackTimer = setTimeout(function () {
+                window.location.href = androidFallbackUrl;
+            }, 1500);
+
+        } else if (isIOSDevice()) {
+            window.location.href = iosDeepLink;
+
+            fallbackTimer = setTimeout(function () {
+                window.location.href = iosFallbackUrl;
+            }, 1500);
+
+        } else {
+            document.querySelector("h2").innerText = "Open this link on a phone";
+            document.querySelector("p").innerText =
+                "This smart link demo should be tested on Android or iOS. Desktop browsers cannot open the mobile app.";
+        }
+    }
+
+    window.onload = function () {
+        openApp();
+    };
+</script>
+
+</body>
+</html>
